@@ -589,14 +589,14 @@ class Rabin(Automaton):
                 else: # parse error
                     raise ValueError('Unknown signature: %s!', acc_sig)
             # add state to Rabin automaton
-            self.g.add_node(name, attr_dict={'good': f, 'bad': b})
+            self.g.add_node(name, **{'good': f, 'bad': b})
             # parse transitions
             transitions = defaultdict(set)
             for bitmap in range(2**nprops):
                 nb = int(lines.popleft())
                 transitions[nb].add(bitmap)
             # add transitions to Rabin automaton
-            self.g.add_edges_from([(name, nb, {'weight': 0, 'input': bitmaps,
+            self.g.add_edges_from([(name, nb, **{'weight': 0, 'input': bitmaps,
                                      'label': self.guard_from_bitmaps(bitmaps)})
                                    for nb, bitmaps in transitions.items()])
 
@@ -678,12 +678,12 @@ def automaton_from_spin(aut, formula, lines):
             # Add edge
             transition_data = {'weight': 0, 'input': bitmaps,
                                'guard' : guard, 'label': guard}
-            aut.g.add_edge(this_state, next_state, attr_dict=transition_data)
+            aut.g.add_edge(this_state, next_state, **transition_data)
         elif line[0:4] == 'skip':
             # Add self-looping edge
             transition_data = {'weight': 0, 'input': aut.alphabet,
                                'guard' : '(1)', 'label': '(1)'}
-            aut.g.add_edge(this_state, this_state, attr_dict=transition_data)
+            aut.g.add_edge(this_state, this_state, **transition_data)
         else:
             this_state = line[0:-1]
             # Add state

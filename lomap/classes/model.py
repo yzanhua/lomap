@@ -68,7 +68,7 @@ class Model(object):
             and self.directed == other.directed and self.multi == other.multi
             and self.init == other.init and self.final == other.final
             #FIXME: Incompatible with nx2.0
-            and self.g.node == other.g.node and self.g.edge == other.g.edge)
+            and self.g.nodes == other.g.nodes and self.g.edges == other.g.edges)
 
     def __ne__(self, other):
         '''Equality testing. See `Model.__eq__()`.'''

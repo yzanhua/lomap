@@ -80,7 +80,7 @@ class Markov(Model):
         else:
             # q is a normal state of the markov model
             r = []
-            for source, target, data in self.g.out_edges_iter((q,), data=True):
+            for source, target, data in self.g.out_edges((q,), data=True):
                 r.append((target, data['weight'], data.get('control', None), data['prob']))
             return tuple(r)
 
@@ -89,7 +89,7 @@ class Markov(Model):
 
         #FIXME: assumes MultiDiGraph
         '''
-        for _,t,key,d in self.g.out_edges_iter((s,), data=True, keys=True):
+        for _,t,key,d in self.g.out_edges((s,), data=True, keys=True):
             if d['control'] == a:
                 if keys:
                     yield(t,key,d)
@@ -101,7 +101,7 @@ class Markov(Model):
         Returns all available actions (controls) at the state.
         '''
         ctrls = set()
-        for _,_,d in self.g.out_edges_iter((s,), data=True):
+        for _,_,d in self.g.out_edges((s,), data=True):
             ctrls.add(d['control'])
         return ctrls
 
@@ -123,11 +123,12 @@ class Markov(Model):
         # Add edges
         for s in policy:
             for t, d in mdp.iter_action_edges(s, policy[s]):
-                self.g.add_edge(s, t, attr_dict = copy.deepcopy(d))
+                attr_dict = copy.deepcopy(d)
+                self.g.add_edge(s, t, **attr_dict)
 
         # Copy attributes of states from MDP
         for s in self.g:
-            self.g.node[s] = copy.deepcopy(mdp.g.node[s])
+            self.g.nodes[s] = copy.deepcopy(mdp.g.nodes[s])
 
     def visualize(self, edgelabel='prob', current_node=None,
                   draw='pygraphviz'):
