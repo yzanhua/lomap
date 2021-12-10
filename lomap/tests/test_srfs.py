@@ -157,7 +157,7 @@ def test_srfs():
 
     M, N = 10, 10
 
-    ts.g.add_nodes_from([((i, j), **{'location': (i, j), 'prop': set(), 'label': ''} )for i in range(M) for j in range(N)])
+    ts.g.add_nodes_from([((i, j), {'location': (i, j), 'prop': set(), 'label': ''} )for i in range(M) for j in range(N)])
 
     for i in range(M):
         for j in range(N):
