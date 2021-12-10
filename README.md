@@ -1,3 +1,9 @@
+Added By yzanhua:
+=======================================
+Change API so that it lomap support PYTHON 3.9.
+
+
+
 LTL Optimal Multi-Agent Planner (LOMAP)
 =======================================
 
