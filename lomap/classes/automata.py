@@ -166,7 +166,7 @@ Edges: {edges}
         # Get the bitmap representation of props
         prop_bitmap = self.bitmap_of_props(props)
         # Return an array of next states
-        return [v for _, v, d in self.g.out_edges_iter(q, data=True)
+        return [v for _, v, d in self.g.out_edges(q, data=True)
                                                    if prop_bitmap in d['input']]
 
     def next_state(self, q, props):
@@ -179,7 +179,7 @@ Edges: {edges}
         # Get the bitmap representation of props
         prop_bitmap = self.bitmap_of_props(props)
         # Return an array of next states
-        nq = [v for _, v, d in self.g.out_edges_iter(q, data=True)
+        nq = [v for _, v, d in self.g.out_edges(q, data=True)
                                                    if prop_bitmap in d['input']]
         assert len(nq) <= 1
         if nq:
@@ -241,7 +241,7 @@ Edges: {edges}
         trap_added = False
         for s in self.g:
             rem_alphabet = set(self.alphabet)
-            for _, _, d in self.g.out_edges_iter(s, data=True):
+            for _, _, d in self.g.out_edges(s, data=True):
                 rem_alphabet -= d['input']
             if rem_alphabet:
                 if not trap_added: #'trap' not in self.g:
@@ -275,7 +275,7 @@ Edges: {edges}
         symbols = set([0] + list(self.props.values()))
         # update transitions and mark for deletion
         del_transitions = deque()
-        for u, v, d in self.g.edges_iter(data=True):
+        for u, v, d in self.g.edges(data=True):
             sym = d['input'] & symbols
             if sym:
                 d['input'] = sym
@@ -285,7 +285,7 @@ Edges: {edges}
         # delete states unreachable from the initial state
         init = next(iter(self.init.keys()))
         reachable_states = list(nx.shortest_path_length(self.g, source=init).keys())
-        del_states = [n for n in self.g.nodes_iter() if n not in reachable_states]
+        del_states = [n for n in self.g.nodes() if n not in reachable_states]
         self.g.remove_nodes_from(del_states)
         return del_states, del_transitions
 
@@ -410,7 +410,7 @@ class Fsa(Automaton):
         # add virtual state which has incoming edges from all final states
         self.g.add_edges_from([(state, 'virtual') for state in self.final])
         # compute trap states
-        trap_states = set(self.g.nodes_iter())
+        trap_states = set(self.g.nodes())
         trap_states -= set(nx.shortest_path_length(self.g, target='virtual'))
         # remove trap state and virtual state
         self.g.remove_nodes_from(trap_states | set(['virtual']))
@@ -453,7 +453,7 @@ class Fsa(Automaton):
             cur_state_set = state_map[cur_state_i]
             next_states = dict()
             for cur_state in cur_state_set:
-                for _,next_state,data in self.g.out_edges_iter(cur_state, True):
+                for _,next_state,data in self.g.out_edges(cur_state, True):
                     inp = next(iter(data['input']))
                     if inp not in next_states:
                         next_states[inp] = set()
@@ -473,7 +473,7 @@ class Fsa(Automaton):
         # All edges of all states must be deterministic
         for state in det.g:
             ins = set()
-            for _, _, d in det.g.out_edges_iter(state, True):
+            for _, _, d in det.g.out_edges(state, True):
                 assert len(d['input']) == 1
                 inp = next(iter(d['input']))
                 if inp in ins:
@@ -596,7 +596,7 @@ class Rabin(Automaton):
                 nb = int(lines.popleft())
                 transitions[nb].add(bitmap)
             # add transitions to Rabin automaton
-            self.g.add_edges_from([(name, nb, **{'weight': 0, 'input': bitmaps,
+            self.g.add_edges_from([(name, nb, {'weight': 0, 'input': bitmaps,
                                      'label': self.guard_from_bitmaps(bitmaps)})
                                    for nb, bitmaps in transitions.items()])
 
@@ -626,7 +626,7 @@ class Rabin(Automaton):
         # add virtual state which has incoming edges from all final states
         self.g.add_edges_from([(state, 'virtual') for state in self.final])
         # compute trap states
-        trap_states = set(self.g.nodes_iter())
+        trap_states = set(self.g.nodes())
         trap_states -= set(nx.shortest_path_length(self.g, target='virtual'))
         # remove trap state and virtual state
         self.g.remove_nodes_from(trap_states | set(['virtual']))

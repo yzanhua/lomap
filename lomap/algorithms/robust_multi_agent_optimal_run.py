@@ -133,11 +133,11 @@ def complement_ts_and_run(ts, prefix, suffix_cycle):
             prev_time = 0
             for t in s_list:
                 weight = t[2] - prev_time
-                ts.g.add_edge(prev, t, 0, {'weight': weight, 'control': orig_control})
+                ts.g.add_edge(prev, t, 0, **{'weight': weight, 'control': orig_control})
                 prev = t
                 prev_time = t[2]
             weight = orig_weight - prev_time
-            ts.g.add_edge(prev, dest, 0, {'weight': weight, 'control': orig_control})
+            ts.g.add_edge(prev, dest, 0, **{'weight': weight, 'control': orig_control})
 
             # Complement prefix and suffix by inserting s_list between any src, dest sequence
             #logger.debug("src: %s, dest: %s" % (src, dest))
